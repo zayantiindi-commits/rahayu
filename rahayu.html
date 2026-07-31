@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rahayu Hotel &amp; Retreat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#1f2e26;
+    --forest-deep:#141f1a;
+    --sand:#ede4d3;
+    --sand-light:#f7f2e8;
+    --clay:#b5693f;
+    --gold:#c9a463;
+    --text-muted:#8a9089;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:var(--sand-light);
+    color:var(--forest-deep);
+  }
+  h1,h2,h3{font-family:'Fraunces',serif;font-weight:500;}
+  a{text-decoration:none;color:inherit;}
+
+  /* NAV */
+  nav{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:28px 60px;position:fixed;top:0;left:0;right:0;z-index:100;
+    transition:background 0.35s ease, padding 0.35s ease, box-shadow 0.35s ease;
+  }
+  nav.scrolled{
+    background:var(--sand-light);padding:16px 60px;
+    box-shadow:0 4px 20px rgba(20,31,26,0.08);
+  }
+  .logo{font-family:'Fraunces',serif;font-size:22px;color:#fff;letter-spacing:0.5px;transition:color 0.35s ease;}
+  nav.scrolled .logo{color:var(--forest-deep);}
+  .logo span{color:var(--gold);}
+  .nav-links{display:flex;gap:36px;align-items:center;}
+  .nav-links a{color:#f2ede3;font-size:14px;font-weight:500;opacity:0.85;transition:color 0.35s ease;}
+  nav.scrolled .nav-links a{color:var(--forest-deep);}
+  .nav-cta{
+    background:var(--gold);color:var(--forest-deep)!important;
+    padding:10px 22px;border-radius:2px;font-weight:600;font-size:13px;
+    letter-spacing:0.5px;opacity:1!important;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.8s ease,transform 0.8s ease;}
+  .reveal.is-visible{opacity:1;transform:translateY(0);}
+
+  /* ROOM FILTER */
+  .filter-bar{display:flex;gap:12px;margin-bottom:36px;}
+  .filter-btn{
+    background:none;border:1px solid #4a5a50;color:#c7cec8;
+    padding:9px 20px;border-radius:20px;font-family:'Manrope',sans-serif;
+    font-size:13px;font-weight:600;cursor:pointer;transition:all 0.25s ease;
+  }
+  .filter-btn.active, .filter-btn:hover{background:var(--gold);border-color:var(--gold);color:var(--forest-deep);}
+  .room-card.hidden{display:none;}
+
+  /* GALLERY */
+  .gallery-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:140px;gap:10px;
+  }
+  .gallery-grid img{
+    width:100%;height:100%;object-fit:cover;border-radius:3px;cursor:pointer;
+    transition:transform 0.4s ease, filter 0.4s ease;
+  }
+  .gallery-grid img:hover{transform:scale(1.03);filter:brightness(1.05);}
+  .g-big{grid-column:span 2;grid-row:span 2;}
+  .lightbox{
+    position:fixed;inset:0;background:rgba(20,31,26,0.92);display:none;
+    align-items:center;justify-content:center;z-index:200;padding:40px;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:90vw;max-height:85vh;border-radius:4px;}
+  .lightbox-close{
+    position:absolute;top:30px;right:44px;color:#fff;font-size:32px;
+    cursor:pointer;font-family:'Manrope',sans-serif;
+  }
+
+  /* TESTIMONIALS */
+  .testi-wrap{position:relative;max-width:640px;margin:0 auto;text-align:center;}
+  .testi-slide{display:none;}
+  .testi-slide.active{display:block;}
+  .testi-quote{font-family:'Fraunces',serif;font-size:24px;font-style:italic;line-height:1.5;color:var(--forest-deep);}
+  .testi-name{margin-top:22px;font-weight:700;font-size:14px;}
+  .testi-role{color:var(--text-muted);font-size:13px;}
+  .testi-dots{display:flex;justify-content:center;gap:8px;margin-top:30px;}
+  .testi-dot{width:8px;height:8px;border-radius:50%;background:#d8cfba;cursor:pointer;border:none;}
+  .testi-dot.active{background:var(--clay);}
+
+  /* HERO */
+  .hero{
+    height:92vh;position:relative;
+    background:linear-gradient(180deg, rgba(20,31,26,0.35) 0%, rgba(20,31,26,0.65) 100%),
+     url('foto-rahayu/baground.jpg') center/cover;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;color:#fff;padding:0 20px;
+  }
+  .hero .eyebrow{
+    font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+    margin-bottom:18px;font-weight:600;
+  }
+  .hero h1{
+    font-size:68px;line-height:1.05;max-width:820px;font-weight:400;
+  }
+  .hero h1 em{font-style:italic;color:var(--gold);}
+  .hero p{
+    margin-top:20px;font-size:16px;color:#e6e1d6;max-width:480px;line-height:1.6;
+  }
+
+  /* SEARCH BAR - floating */
+  .search-bar{
+    margin-top:-38px;z-index:5;position:relative;
+    background:var(--sand-light);
+    border-radius:4px;
+    display:flex;flex-wrap:wrap;
+    box-shadow:0 20px 50px rgba(20,31,26,0.25);
+    width:min(880px,90vw);
+  }
+  .search-field{
+    flex:1;min-width:150px;padding:20px 26px;border-right:1px solid #e2dac8;
+  }
+  .search-field:last-of-type{border-right:none;}
+  .search-field label{
+    display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;
+    color:var(--text-muted);margin-bottom:6px;font-weight:600;
+  }
+  .search-field input{
+    border:none;background:none;font-family:'Manrope',sans-serif;font-size:15px;
+    color:var(--forest-deep);width:100%;font-weight:600;
+  }
+  .search-btn{
+    background:var(--clay);color:#fff;border:none;padding:0 38px;
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:14px;
+    letter-spacing:0.5px;cursor:pointer;
+  }
+
+  section{padding:120px 60px;scroll-margin-top:90px;}
+  .rooms-wrap{scroll-margin-top:60px;}
+  .section-head{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:56px;flex-wrap:wrap;gap:20px;
+  }
+  .section-head .eyebrow{
+    font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--clay);
+    font-weight:700;margin-bottom:10px;
+  }
+  .section-head h2{font-size:38px;max-width:480px;color:var(--forest-deep);}
+  .section-head p{max-width:340px;color:var(--text-muted);font-size:14.5px;line-height:1.7;}
+
+  /* FASILITAS */
+  .amenities{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
+    background:#e2dac8;
+  }
+  .amenity{
+    background:var(--sand-light);padding:44px 30px;
+  }
+  .amenity .num{font-size:12px;color:var(--clay);font-weight:700;letter-spacing:1px;}
+  .amenity h3{font-size:19px;margin:14px 0 10px;color:var(--forest-deep);}
+  .amenity p{font-size:13.5px;color:var(--text-muted);line-height:1.6;}
+
+  /* ROOMS */
+  .rooms-wrap{background:var(--forest);padding:120px 60px;}
+  .rooms-wrap .section-head h2, .rooms-wrap .section-head .eyebrow{color:var(--sand-light);}
+  .rooms-wrap .eyebrow{color:var(--gold)!important;}
+  .rooms-wrap .section-head p{color:#a9b3aa;}
+  .rooms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+  .room-card{
+    background:var(--forest-deep);border-radius:3px;overflow:hidden;
+    transition:transform 0.35s ease;
+  }
+  .room-card:hover{transform:translateY(-6px);}
+  .room-img{height:230px;background-size:cover;background-position:center;position:relative;}
+  .room-price{
+    position:absolute;bottom:14px;right:14px;background:var(--sand-light);
+    color:var(--forest-deep);padding:6px 14px;border-radius:2px;
+    font-size:13px;font-weight:700;
+  }
+  .room-body{padding:26px;}
+  .room-body .tag{font-size:11px;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;}
+  .room-body h3{color:#fff;font-size:22px;margin:10px 0 8px;}
+  .room-body p{color:#a9b3aa;font-size:13.5px;line-height:1.6;margin-bottom:18px;}
+  .room-body a{
+    font-size:13px;font-weight:700;color:var(--gold);
+    display:inline-flex;align-items:center;gap:6px;
+  }
+
+  footer{
+    background:var(--forest-deep);color:#a9b3aa;padding:50px 60px;
+    display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:16px;
+    font-size:13px;
+  }
+
+  @media(max-width:900px){
+    nav{padding:20px 24px;}
+    .hero h1{font-size:38px;}
+    section{padding:70px 24px;}
+    .amenities{grid-template-columns:1fr 1fr;}
+    .rooms-grid{grid-template-columns:1fr;}
+    .rooms-wrap{padding:70px 24px;}
+    .nav-links{display:none;}
+    .gallery-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:110px;}
+    .g-big{grid-column:span 2;grid-row:span 1;}
+    .filter-bar{flex-wrap:wrap;}
+    .testi-quote{font-size:19px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#top" class="logo">Rahayu<span>.</span></a>
+  <div class="nav-links">
+    <a href="#kamar">Kamar</a>
+    <a href="#fasilitas">Fasilitas</a>
+    <a href="#galeri">Galeri</a>
+    <a href="#booking">Booking</a>
+    <a href="#booking" class="nav-cta">Pesan Sekarang</a>
+  </div>
+</nav>
+
+<div class="hero" id="top">
+  <div class="eyebrow">Ubud, Bali — Retreat Tepi Pantai</div>
+  <h1>Istirahat yang <em>terasa nyata</em>,<br>jauh dari kebisingan</h1>
+  <p>Rahayu Hotel dikelilingi hamparan pasir putih dan deburan ombak. Tempat terbaik untuk kembali segar dan menikmati setiap momen.</p>
+</div>
+
+<div style="display:flex;justify-content:center;" id="booking">
+  <div class="search-bar">
+    <div class="search-field">
+      <label>Check-in</label>
+      <input type="text" value="12 Agu 2026" readonly>
+    </div>
+    <div class="search-field">
+      <label>Check-out</label>
+      <input type="text" value="15 Agu 2026" readonly>
+    </div>
+    <div class="search-field">
+      <label>Tipe Kamar</label>
+      <input type="text" id="tipe-kamar" value="Pilih dari daftar kamar" readonly>
+    </div>
+    <div class="search-field">
+      <label>Tamu</label>
+      <input type="text" id="jumlah-tamu" value="2 Dewasa" readonly>
+    </div>
+    <button class="search-btn">Cari Kamar</button>
+  </div>
+</div>
+
+<section id="fasilitas" class="reveal">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">Kenapa Rahayu</div>
+      <h2>Fasilitas yang dirancang untuk menikmati samudra</h2>
+    </div>
+    <p>Bukan sekadar daftar amenitas — tiap sudut Rahayu dibangun supaya Anda benar-benar menikmati setiap hembusan angin pantai.</p>
+  </div>
+  <div class="amenities">
+    <div class="amenity">
+      <div class="num">01</div>
+      <h3>Kolam Tepi Pantai</h3>
+      <p>Infinity pool langsung menghadap cakrawala laut, buka dari subuh hingga tengah malam untuk menikmati sunset terbaik.</p>
+    </div>
+    <div class="amenity">
+      <div class="num">02</div>
+      <h3>Restoran Tepi Laut</h3>
+      <p>Hidangan laut segar harian dan bahan lokal pilihan, disantap dengan pemandangan ombak lepas.</p>
+    </div>
+    <div class="amenity">
+      <div class="num">03</div>
+      <h3>Area Relaksasi</h3>
+      <p>Deck kayu terbuka untuk yoga pagi atau bersantai mendengarkan suara deburan ombak tanpa biaya tambahan.</p>
+    </div>
+    <div class="amenity">
+      <div class="num">04</div>
+      <h3>Akses Pantai Privat</h3>
+      <p>Akses jalan kaki langsung menuju pasir putih, cocok untuk jalan santai di pagi hari yang lambat.</p>
+    </div>
+  </div>
+</section>
+
+<div class="rooms-wrap reveal" id="kamar">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow">Pilihan Kamar</div>
+      <h2>Tiga cara menikmati laut</h2>
+    </div>
+    <p>Semua kamar menghadap samudra — bedanya hanya seberapa dekat Anda dengan deburan ombak.</p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-filter="all" onclick="filterKamar('all',this)">Semua</button>
+    <button class="filter-btn" data-filter="standard" onclick="filterKamar('standard',this)">Standard</button>
+    <button class="filter-btn" data-filter="favorit" onclick="filterKamar('favorit',this)">Favorit</button>
+    <button class="filter-btn" data-filter="suite" onclick="filterKamar('suite',this)">Suite</button>
+  </div>
+
+  <div class="rooms-grid">
+    <div class="room-card" id="Beachside-room" data-cat="standard">
+      <div class="room-img" style="background-image:url('foto-rahayu/beachsideroom.jpg');">
+        <div class="room-price">Rp 1.200.000 / malam</div>
+      </div>
+      <div class="room-body">
+        <div class="tag">Standard</div>
+        <h3>Beachside Room</h3>
+        <p>28m² dengan balkon menghadap pesisir laut dan hembusan angin pantai yang segar.</p>
+        <a href="#booking" onclick="pilihKamar('Beachside Room','2 Dewasa')">Lihat detail &rarr;</a>
+      </div>
+    </div>
+    <div class="room-card" id="canopy-villa" data-cat="favorit">
+      <div class="room-img" style="background-image:url('foto-rahayu/oceanfront.jpg');">
+        <div class="room-price">Rp 2.100.000 / malam</div>
+      </div>
+      <div class="room-body">
+        <div class="tag">Favorit</div>
+        <h3>ceanfront Villa</h3>
+        <p>Vila tepi pantai dengan teras luas dan bak rendam terbuka menghadap pemandangan laut.</p>
+        <a href="#booking" onclick="pilihKamar('ceanfront Villa','2 Dewasa, 1 Anak')">Lihat detail &rarr;</a>
+      </div>
+    </div>
+    <div class="room-card" id="river-house" data-cat="suite">
+      <div class="room-img" style="background-image:url('foto-rahayu/beachsidesuit.jpg');">
+        <div class="room-price">Rp 3.400.000 / malam</div>
+      </div>
+      <div class="room-body">
+        <div class="tag">Suite</div>
+        <h3>Beachfront Suite</h3>
+        <p>Suite mewah tepat di tepi pasir putih, dilengkapi dengan plunge pool privat menghadap samudra.</p>
+        <a href="#booking" onclick="pilihKamar('Beachfront Suite','4 Dewasa')">Lihat detail &rarr;</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="galeri" class="reveal">
+  <div class="section-head">
+    <div>
+      <h2>Sekilas pandangan dari tiap sudut</h2>
+    </div>
+    <p>Klik foto untuk melihat lebih besar.</p>
+  </div>
+  <div class="gallery-grid">
+    <img class="g-big" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" onclick="bukaLightbox(this.src)">
+    <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500&q=80" onclick="bukaLightbox(this.src)">
+    <img src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=500&q=80" onclick="bukaLightbox(this.src)">
+    <img src="foto-rahayu/baground.jpg" alt="baground">
+    <img src="foto-rahayu/beachsideroom.jpg" alt="beachsideroom">
+    <img src="foto-rahayu/oceanfront.jpg" alt="oceanfront">
+    <img src="foto-rahayu/beachsidesuit.jpg" alt="beachsidesuit" onclick="bukaLightbox(this.src)">
+    <img src="foto-rahayu/Restaurant.jpg" alt="Restaurant" onclick="bukaLightbox(this.src)">
+    <img src="foto-rahayu/relaksasi.jpg" alt="relaksasi" onclick="bukaLightbox(this.src)">
+    
+  </div>
+</section>
+
+<section id="testimoni" class="reveal">
+  <div class="section-head">
+    <div>
+      <h2>Cerita dari yang sudah menginap</h2>
+    </div>
+  </div>
+  <div class="testi-wrap">
+    <div class="testi-slide active">
+      <p class="testi-quote">"Bangun pagi dengar suara ombak, bukan klakson. Itu yang bikin beda."</p>
+      <div class="testi-name">Rani Wulandari</div>
+      <div class="testi-role">Menginap di Oceanfront Villa</div>
+    </div>
+    <div class="testi-slide">
+      <p class="testi-quote">"Staf ingat nama kami sejak hari pertama. Rasanya seperti pulang ke rumah kedua."</p>
+      <div class="testi-name">Dimas Aditya</div>
+      <div class="testi-role">Menginap di Beachfront Suite </div>
+    </div>
+    <div class="testi-slide">
+      <p class="testi-quote">"Sesi yoga paginya jadi rutinitas favorit tiap liburan ke sini."</p>
+      <div class="testi-name">Sari Puspita</div>
+      <div class="testi-role">Menginap di Beachside Room</div>
+    </div>
+    <div class="testi-dots">
+      <button class="testi-dot active" onclick="gantiTesti(0)"></button>
+      <button class="testi-dot" onclick="gantiTesti(1)"></button>
+      <button class="testi-dot" onclick="gantiTesti(2)"></button>
+    </div>
+  </div>
+</section>
+
+<div class="lightbox" id="lightbox" onclick="tutupLightbox()">
+  <span class="lightbox-close">&times;</span>
+  <img id="lightbox-img" src="">
+</div>
+
+<footer>
+  <div>&copy; 2026 Rahayu Hotel &amp; Retreat.</div>
+</footer>
+
+<script>
+  function pilihKamar(nama, tamu){
+    document.getElementById('tipe-kamar').value = nama;
+    document.getElementById('jumlah-tamu').value = tamu;
+    document.getElementById('booking').scrollIntoView({behavior:'smooth'});
+  }
+
+  // Filter kamar
+  function filterKamar(cat, btn){
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.room-card').forEach(card => {
+      const match = cat === 'all' || card.dataset.cat === cat;
+      card.classList.toggle('hidden', !match);
+    });
+  }
+
+  // Lightbox galeri
+  function bukaLightbox(src){
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function tutupLightbox(){
+    document.getElementById('lightbox').classList.remove('open');
+  }
+
+  // Testimoni slider
+  let testiIndex = 0;
+  function gantiTesti(i){
+    const slides = document.querySelectorAll('.testi-slide');
+    const dots = document.querySelectorAll('.testi-dot');
+    slides[testiIndex].classList.remove('active');
+    dots[testiIndex].classList.remove('active');
+    testiIndex = i;
+    slides[testiIndex].classList.add('active');
+    dots[testiIndex].classList.add('active');
+  }
+  setInterval(() => {
+    let next = (testiIndex + 1) % document.querySelectorAll('.testi-slide').length;
+    gantiTesti(next);
+  }, 5000);
+
+  // Nav berubah warna saat scroll
+  const navEl = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    navEl.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Scroll reveal animation
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.15});
+  revealEls.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
